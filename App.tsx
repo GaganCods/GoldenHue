@@ -1,3 +1,4 @@
+import logo from '/3d-fav.png';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Palette } from './components/Palette';
 import { 
@@ -34,11 +35,12 @@ const DEFAULTS: Settings = {
 // Official Brand Icon
 const GoldenHueLogo = ({ className = "w-8 h-8" }: { className?: string }) => (
   <img 
-    src="3d-fav.png" 
-    alt="GoldenHue Logo" 
+    src={logo}
+    alt="GoldenHue Logo"
     className={`object-contain select-none ${className}`} 
   />
 );
+
 
 // Reusable Brand Header Component
 const BrandHeader = ({ className = "" }: { className?: string }) => (
