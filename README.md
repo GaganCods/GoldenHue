@@ -1,20 +1,109 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🎨 GoldenHue
 
-# Run and deploy your AI Studio app
+**Perfect Color Harmony, Instantly**
 
-This contains everything you need to run your app locally.
+GoldenHue is a modern, mobile-first web app that generates visually balanced color palettes using Golden Ratio theory and golden-angle hue shifts — built for designers, developers, and creators who care about precision and accessibility.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1dp06w78QhPEl7gyrRhnT5EcZoCGhFtG5
+---
 
-## Run Locally
+![GoldenHue Logo](public/3d-fav.png)
 
-**Prerequisites:**  Node.js
+---
 
+## ✨ What is GoldenHue?
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+GoldenHue helps you:
+
+- Select a primary color
+- Instantly generate harmonious palettes
+- Validate accessibility
+- Export colors for real-world projects
+- Stay focused with a clean, minimal UI
+
+It’s fast, elegant, and production-ready.
+
+---
+
+## 🚀 Features
+
+### 🎯 Palette Generation
+- Pick a main color via HEX, sliders, or color picker
+- Golden Ratio–based harmony engine
+- Generate 5–9 colors
+- Lock individual colors
+- Shuffle variations
+- Rename & tag colors
+- Save favorites locally
+- Compare palettes side-by-side
+
+---
+
+### ♿ Accessibility & Contrast
+- WCAG AA / AAA scoring
+- Black / white text recommendations
+- Low-contrast warnings
+- Text preview cards
+- Color-blindness simulation modes
+
+---
+
+### ⚡ Workflow Tools
+- Drag & reorder colors
+- Copy HEX / RGB / HSL instantly
+- Batch copy full palette
+- Generate shades & tints
+- Gradient builder
+- UI mockup previews
+
+---
+
+### 📤 Export Options
+- PNG export (1× / 2× / 4×)
+- CSS variables
+- Tailwind config snippet
+- JSON
+- SVG palette sheets
+- Shareable links
+
+---
+
+## 🖥️ Design Philosophy
+
+GoldenHue is built around:
+
+- White-first minimal interface
+- Mobile-first responsive layout
+- Subtle micro-interactions
+- Sticky mobile toolbars
+- Keyboard-friendly desktop flow
+- Calm typography
+- Zero clutter
+
+---
+
+## 🧭 Branding
+
+- App name: **GoldenHue**
+- Tagline: _Perfect Color Harmony_
+- Icon: `3d-fav.png`
+- Used in favicon, navbar, sidebar, and social previews
+
+---
+
+## 🛠️ Tech Stack
+
+- HTML / CSS / JavaScript
+- Canvas API for PNG export
+- WCAG contrast utilities
+- CSS Grid / Flexbox
+- Vite / Next.js / React (depending on implementation)
+
+---
+
+## 🏁 Getting Started
+
+### Clone the repo
+
+```bash
+git clone https://github.com/your-username/goldenhue.git
+cd goldenhue

@@ -13,7 +13,6 @@ import { generatePaletteImage, downloadImage } from './utils/imageExport';
 import { 
   Wand2, 
   Image as ImageIcon,
-  Palette as PaletteIcon,
   Menu,
   X,
   RefreshCw,
@@ -31,6 +30,30 @@ const DEFAULTS: Settings = {
   baseColor: '#3B82F6'
 };
 
+// Official Brand Icon
+const GoldenHueLogo = ({ className = "w-8 h-8" }: { className?: string }) => (
+  <img 
+    src="3d-fav.png" 
+    alt="GoldenHue Logo" 
+    className={`object-contain select-none ${className}`} 
+  />
+);
+
+// Reusable Brand Header Component
+const BrandHeader = ({ className = "" }: { className?: string }) => (
+  <div className={`flex items-center gap-3.5 ${className}`}>
+    <GoldenHueLogo className="w-10 h-10 md:w-11 md:h-11 shrink-0" />
+    <div className="flex flex-col justify-center">
+      <span className="font-bold text-slate-900 text-lg md:text-xl leading-none tracking-tight">
+        GoldenHue
+      </span>
+      <span className="text-xs md:text-sm text-slate-500 font-medium leading-none mt-1.5 tracking-wide">
+        Perfect Color Harmony
+      </span>
+    </div>
+  </div>
+);
+
 const App: React.FC = () => {
   // State
   const [colors, setColors] = useState<ColorData[]>([]);
@@ -39,6 +62,9 @@ const App: React.FC = () => {
   const [showA11y, setShowA11y] = useState(false);
   const [cbMode, setCbMode] = useState<ColorBlindnessMode>(ColorBlindnessMode.NONE);
   const [loading, setLoading] = useState(false);
+  
+  // Input State for Hex Editing
+  const [hexInput, setHexInput] = useState(DEFAULTS.baseColor.replace('#', ''));
   
   // Modals
   const [showExport, setShowExport] = useState(false);
@@ -56,6 +82,11 @@ const App: React.FC = () => {
     regenerate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once on mount
+
+  // Sync hex input when settings change externally
+  useEffect(() => {
+    setHexInput(settings.baseColor.replace('#', ''));
+  }, [settings.baseColor]);
 
   const regenerate = useCallback((newSettings?: Partial<Settings>, keepLocks = true) => {
     const nextSettings = { ...settings, ...newSettings };
@@ -104,6 +135,28 @@ const App: React.FC = () => {
   const handleBaseColorChange = (hex: string) => {
     if (isValidHex(hex)) {
         regenerate({ baseColor: hex.toUpperCase() });
+    }
+  };
+
+  // Manual Hex Input Handlers
+  const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.toUpperCase();
+    if (/^[0-9A-F]*$/.test(val) && val.length <= 6) {
+        setHexInput(val);
+        // Only trigger update if full 6 characters to prevent jumping/expanding of 3-char hexes while typing
+        if (val.length === 6) {
+             regenerate({ baseColor: '#' + val });
+        }
+    }
+  };
+
+  const handleHexInputBlur = () => {
+    const fullHex = '#' + hexInput;
+    if (isValidHex(fullHex)) {
+        regenerate({ baseColor: fullHex });
+    } else {
+        // Revert to valid if invalid on blur
+        setHexInput(settings.baseColor.replace('#', ''));
     }
   };
 
@@ -168,7 +221,7 @@ const App: React.FC = () => {
     // Slight delay to allow UI to update
     setTimeout(() => {
         const dataUrl = generatePaletteImage(colors, exportScale, exportTransparent);
-        downloadImage(dataUrl, `golden-ratio-palette-${Date.now()}.png`);
+        downloadImage(dataUrl, `golden-hue-palette-${Date.now()}.png`);
         setIsExportingImg(false);
         setImgExportSuccess(true);
         setTimeout(() => setImgExportSuccess(false), 2000);
@@ -180,12 +233,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 text-slate-900 overflow-hidden relative transition-colors duration-500">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 text-slate-900 overflow-hidden relative transition-colors duration-500 font-sans">
       
-      {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-white border-b z-50">
-        <h1 className="font-bold text-lg tracking-tight">Golden Ratio</h1>
-        <button onClick={() => setSidebarOpen(true)} className="p-2"><Menu /></button>
+      {/* Mobile Navbar */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-100 z-50 shadow-sm">
+        <BrandHeader />
+        <button onClick={() => setSidebarOpen(true)} className="p-2 text-slate-600 hover:bg-gray-100 rounded-lg transition-colors"><Menu className="w-6 h-6" /></button>
       </div>
 
       {/* Sidebar Controls */}
@@ -193,12 +246,10 @@ const App: React.FC = () => {
         fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-100 shadow-2xl transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:shadow-none flex flex-col
       `}>
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <div>
-            <h1 className="font-bold text-xl tracking-tight bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Golden Ratio</h1>
-            <p className="text-xs text-gray-400 font-medium">Color Palette Generator</p>
-          </div>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden p-2 text-gray-400"><X /></button>
+        {/* Sidebar Header */}
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
+          <BrandHeader />
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden p-2 text-gray-400 hover:text-slate-600 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-24 md:pb-6">
@@ -211,7 +262,7 @@ const App: React.FC = () => {
                         <button
                             key={mode}
                             onClick={() => regenerate({ harmony: mode })}
-                            className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all ${settings.harmony === mode ? 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200' : 'hover:bg-gray-50 text-slate-600'}`}
+                            className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all ${settings.harmony === mode ? 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 shadow-sm' : 'hover:bg-gray-50 text-slate-600'}`}
                         >
                             {mode}
                         </button>
@@ -281,7 +332,7 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Canvas */}
-      <main className="flex-1 relative flex flex-col h-[calc(100vh-60px)] md:h-screen p-4 md:p-8 overflow-y-auto overflow-x-hidden bg-gray-50/50 pb-24 md:pb-8">
+      <main className="flex-1 relative flex flex-col h-[calc(100vh-80px)] md:h-screen p-4 md:p-8 overflow-y-auto overflow-x-hidden bg-gray-50/50 pb-24 md:pb-8">
         
         {/* Main Picker Section */}
         <div className="max-w-6xl mx-auto w-full mb-8 transition-all duration-500 ease-in-out">
@@ -309,10 +360,12 @@ const App: React.FC = () => {
                         <div className="relative group">
                             <span className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-300 font-mono text-xl select-none">#</span>
                             <input 
-                                className="w-32 bg-transparent text-slate-800 font-mono font-bold text-3xl p-0 pl-6 focus:outline-none uppercase"
-                                value={settings.baseColor.replace('#', '')}
-                                onChange={(e) => handleBaseColorChange('#' + e.target.value)}
+                                className="w-32 bg-transparent text-slate-800 font-mono font-bold text-3xl p-0 pl-6 focus:outline-none uppercase placeholder-gray-200"
+                                value={hexInput}
+                                onChange={handleHexInputChange}
+                                onBlur={handleHexInputBlur}
                                 maxLength={6}
+                                placeholder="000000"
                             />
                         </div>
                     </div>
@@ -400,12 +453,9 @@ const App: React.FC = () => {
             </div>
         </div>
 
-        {/* Top Bar Desktop (Title only now) */}
+        {/* Desktop Brand Header / Navbar (Top of Main) */}
         <div className="hidden md:flex justify-between items-center mb-6 max-w-6xl mx-auto w-full">
-            <h2 className="text-xl font-bold text-slate-400 flex items-center gap-2">
-                <PaletteIcon className="w-5 h-5 text-indigo-400" />
-                Generated Harmony
-            </h2>
+            <BrandHeader />
         </div>
 
         {/* Palette Display */}
@@ -432,14 +482,14 @@ const App: React.FC = () => {
 
         {/* Preview Section Mini (Bottom) */}
         {!loading && (
-             <div className="mt-12 hidden md:grid grid-cols-2 gap-4 max-w-6xl mx-auto w-full pb-8">
+             <div className="mt-12 hidden md:grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto w-full pb-8">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-6">
-                     <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white" style={{ backgroundColor: colors[0]?.hex }}>AB</div>
-                     <div>
+                     <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white shrink-0" style={{ backgroundColor: colors[0]?.hex }}>AB</div>
+                     <div className="min-w-0">
                          <h4 className="font-bold text-slate-800 text-lg">Heading Text</h4>
-                         <p className="text-slate-500">Body text appears like this.</p>
+                         <p className="text-slate-500 truncate">Body text appears like this.</p>
                      </div>
-                     <button className="ml-auto px-6 py-2.5 rounded-lg text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95" style={{ backgroundColor: colors[1]?.hex || '#000' }}>
+                     <button className="ml-auto px-6 py-2.5 rounded-lg text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95 shrink-0" style={{ backgroundColor: colors[1]?.hex || '#000' }}>
                         Button
                      </button>
                 </div>
